@@ -1,0 +1,22 @@
+{
+  "coala_manifest": 1,
+  "project": "ds-mods",
+  "skill": "ds-mods-coala-agent-skill",
+  "db": "memory/coala.sqlite",
+  "engine": {
+    "file": "scripts/coala.py",
+    "version": "3.0.0",
+    "sha256": "2fd31064a98da803a94dfdb903f448daa551feeecc5b7dc7b371337ce88eee67"
+  },
+  "schema_version": 4,
+  "git_policy": "track-dump",
+  "installer": "coala-agent-skill/scripts/coala-install.py",
+  "installed_at": "2026-10-24T21:50:29+00:00",
+  "updated_at": "2026-10-24T23:39:37+00:00",
+  "managed": {
+    "SKILL.md": "c48dd981729570a0fdc23e9cda8106cd1ade020c2df4e9745131a27d51ff8e08",
+    "memory/.gitignore": "a93ae126c1f67b099312fb2c55d98452f93cdaa5295afecccc84188fc75c52f0",
+    "references/schema.md": "d7bdd6cb63f82d0daf645c311e9b72a958b008ec09ab516759d1466905f46027",
+    "scripts/coala.py": "2fd31064a98da803a94dfdb903f448daa551feeecc5b7dc7b371337ce88eee67"
+  }
+}

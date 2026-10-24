@@ -1,0 +1,73 @@
+{
+  "_doc": "Fontes do material do projeto para `coala.py sync`. rules: mode markdown|text|whole|pdf · type episodic|semantic|procedural · origin owner|agent|untrusted|system · tags aceitam {stem} {name} {dir} {rule}; a primeira regra que apanha um ficheiro ganha. code: o catálogo de código (símbolos por ficheiro) é automático — `include`/`exclude` são globs, `enabled: false` desliga. Ver references/instalar.md da coala-agent-skill.",
+  "version": 2,
+  "key_prefix": "proj",
+  "path_prefix": "",
+  "exclude": [],
+  "rules": [
+    {
+      "name": "readme",
+      "include": [
+        "README.md",
+        "roms/README.md",
+        "roms/bios/README.md",
+        "games/README.md"
+      ],
+      "mode": "markdown",
+      "type": "semantic",
+      "origin": "agent",
+      "tags": "docs,readme"
+    },
+    {
+      "name": "manual-agente",
+      "include": [
+        "CLAUDE.md",
+        "AGENTS.md"
+      ],
+      "mode": "markdown",
+      "type": "procedural",
+      "origin": "agent",
+      "tags": "manual,{stem}"
+    },
+    {
+      "name": "guia-original",
+      "include": [
+        "docs/guia-original.md"
+      ],
+      "mode": "markdown",
+      "type": "semantic",
+      "origin": "untrusted",
+      "tags": "docs,guia-original,nao-verificado"
+    },
+    {
+      "name": "docs",
+      "include": [
+        "docs/*.md"
+      ],
+      "mode": "markdown",
+      "type": "semantic",
+      "origin": "agent",
+      "tags": "docs,{stem}"
+    },
+    {
+      "name": "notas-jogos",
+      "include": [
+        "games/*/notes/*.md",
+        "games/*/README.md"
+      ],
+      "mode": "markdown",
+      "type": "semantic",
+      "origin": "agent",
+      "tags": "jogo,{dir}"
+    }
+  ],
+  "code": {
+    "enabled": true,
+    "include": [],
+    "exclude": []
+  },
+  "graph": {
+    "entities": [],
+    "edges": []
+  }
+}

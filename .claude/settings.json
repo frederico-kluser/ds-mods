@@ -1,0 +1,22 @@
+{
+  "enabledMcpjsonServers": [
+    "rea"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(./factory *)",
+      "Bash(./factory)",
+      "Bash(.venv/Scripts/python.exe tools/factory_cli.py *)",
+      "Bash(python .agents/ds-mods-coala-agent-skill/scripts/coala.py *)",
+      "Bash(python3 .agents/ds-mods-coala-agent-skill/scripts/coala.py *)",
+      "PowerShell(.\\factory.ps1 *)",
+      "PowerShell(.\\factory.ps1)",
+      "PowerShell(.\\factory.cmd *)",
+      "PowerShell(factory.cmd *)",
+      "PowerShell(.\\.venv\\Scripts\\python.exe tools\\factory_cli.py *)",
+      "PowerShell(python .agents/ds-mods-coala-agent-skill/scripts/coala.py *)",
+      "PowerShell(python3 .agents/ds-mods-coala-agent-skill/scripts/coala.py *)",
+      "PowerShell(python .agents\\ds-mods-coala-agent-skill\\scripts\\coala.py *)"
+    ]
+  }
+}

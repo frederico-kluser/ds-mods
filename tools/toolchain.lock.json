@@ -1,0 +1,104 @@
+{
+  "arm-gnu": {
+    "version": "15.2.1-1.1",
+    "url": "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v15.2.1-1.1/xpack-arm-none-eabi-gcc-15.2.1-1.1-win32-x64.zip",
+    "sha256": "bae6a3d1667697ce750c3b13d6d26d80973ecedc2cc87bf04869e83447fd93ea",
+    "size": 335571206
+  },
+  "armips": {
+    "version": "v0.11.0",
+    "url": "https://github.com/Kingcom/armips/releases/download/v0.11.0/armips-v0.11.0-windows-x86.7z",
+    "sha256": "ead4c8282867255c9e47cd8855383422d82e31908721405a5b7191b95125262b",
+    "size": 192012
+  },
+  "bizhawk": {
+    "version": "2.11.1",
+    "url": "https://github.com/TASEmulators/BizHawk/releases/download/2.11.1/BizHawk-2.11.1-win-x64.zip",
+    "sha256": "dd7cbd5e205b09c5bce6afabc4f8aa525acc0bbeb9753b198a8db3fe6a5e5717",
+    "size": 97984101
+  },
+  "desmume": {
+    "version": "0.9.13",
+    "url": "https://github.com/TASEmulators/desmume/releases/download/release_0_9_13/desmume-0.9.13-win64.zip",
+    "sha256": "cbf710b8e6b29f0904e289a9b9a895548a2d7c7af5a3145c8279b97a69a09276",
+    "size": 6086795
+  },
+  "dsd": {
+    "version": "v0.12.1",
+    "url": "https://github.com/AetiasHax/ds-decomp/releases/download/v0.12.1/dsd-windows-x86_64.exe",
+    "sha256": "5917df26bffc05d4752276a2e0b1edd21bd6e920aabe1992be8a50efc9d10932",
+    "size": 11462144
+  },
+  "dsd-ghidra": {
+    "version": "v0.7.0",
+    "url": "https://github.com/AetiasHax/dsd-ghidra/releases/download/v0.7.0/ghidra_11.2.1_PUBLIC_20260814_dsd-ghidra.zip",
+    "sha256": "2016c2c046b64037cee058f5581a0d3f839c149907f75109c480605742e6e56e",
+    "size": 27311595
+  },
+  "fireflower": {
+    "version": "1.0",
+    "url": "https://github.com/MammaMiaTeam/Fireflower/releases/download/1.0/fireflower.zip",
+    "sha256": "611fb7ef16e127287731069f88f7a77ea343cc192bcf4ac7a036f0a24bc1fb18",
+    "size": 213108
+  },
+  "ghidra": {
+    "version": "11.2.1",
+    "url": "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_11.2.1_build/ghidra_11.2.1_PUBLIC_20241105.zip",
+    "sha256": "ce4db5117da0fbaf8f33863fec4f40902f754f06b68945a59fb1c0f9b1bc461c",
+    "size": 424821346
+  },
+  "jdk21": {
+    "version": "21.0.12.1+1",
+    "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jdk_x64_windows_hotspot_21.0.12.1_1.zip",
+    "sha256": "f9d6e191ab098c0d416e7d588a24420a8621cd2f4720dab2459b8b7b2d2d8b4e",
+    "size": 205073461
+  },
+  "melonds": {
+    "version": "1.1",
+    "url": "https://github.com/melonDS-emu/melonDS/releases/download/1.1/melonDS-1.1-windows-x86_64.zip",
+    "sha256": "9f3f8a244103be20b5b657af5b0ed1b2a66bb20a7181476a6d294c9a53d4f8c8",
+    "size": 19484283
+  },
+  "mwccarm": {
+    "version": "decompme-compilers-2023-10-18",
+    "url": "https://github.com/decompme/compilers/releases/download/compilers/mwccarm.zip",
+    "sha256": "dc386e37b2176e960954a733de928337d9b7e7620b9e94228008c31774339ace",
+    "size": 51684965
+  },
+  "ncpatcher": {
+    "version": "v1.1.2",
+    "url": "https://github.com/TheGameratorT/NCPatcher/releases/download/v1.1.2/ncpatcher_v1.1.2_Windows-64bit.zip",
+    "sha256": "e5a8d252ee5499b0e55dbb9fc29ad5754ea9c0da8e856846e0be33a5ee4c423c",
+    "size": 178691
+  },
+  "neondst": {
+    "version": "v1.0.0",
+    "url": "https://github.com/pants64DS/neondst/releases/download/v1.0.0/neondst-windows-x86_64.exe",
+    "sha256": "01a850aeee9fe6d44d78edf9a92c676f31cb31ac0189e7a25fcf8de2732ae2e1",
+    "size": 2938235
+  },
+  "ninja": {
+    "version": "v1.13.2",
+    "url": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip",
+    "sha256": "07fc8261b42b20e71d1720b39068c2e14ffcee6396b76fb7a795fb460b78dc65",
+    "size": 291570
+  },
+  "objdiff-cli": {
+    "version": "v3.8.3",
+    "url": "https://github.com/encounter/objdiff/releases/download/v3.8.3/objdiff-cli-windows-x86_64.exe",
+    "sha256": "dd12dfb5e9e94a7f6c949a37e1815963cf2cffe4c87b4999b7ebc8c15b398a1f",
+    "size": 7164416
+  },
+  "objdiff-gui": {
+    "version": "v3.8.3",
+    "url": "https://github.com/encounter/objdiff/releases/download/v3.8.3/objdiff-windows-x86_64.exe",
+    "sha256": "2c1e8115685024b256caa5d6c2179a30a8850a5a9d99ee11843b5869b516874c",
+    "size": 24297984
+  },
+  "sjiswrap": {
+    "version": "v1.2.2",
+    "url": "https://github.com/encounter/sjiswrap/releases/download/v1.2.2/sjiswrap-windows-x86.exe",
+    "sha256": "01d50fa1148cfc3c3b16658c6c9b1c0d9f5324cde79ed6c09ef8353af9d63adf",
+    "size": 347648
+  }
+}

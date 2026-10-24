@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+# Fábrica de mods/recompilação de DS — atalho para o CLI no Git Bash / WSL:  ./factory <comando> ...
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+PY="$ROOT/.venv/Scripts/python.exe"
+[ -x "$PY" ] || PY="$ROOT/.venv/bin/python"
+if [ ! -x "$PY" ]; then
+  echo "[factory] .venv ausente — rode: powershell -ExecutionPolicy Bypass -File bootstrap.ps1" >&2
+  exit 3
+fi
+export PYTHONIOENCODING=utf-8
+exec "$PY" "$ROOT/tools/factory_cli.py" "$@"

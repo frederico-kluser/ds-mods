@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "rea": {
+      "type": "stdio",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--",
+        "bash",
+        "-lc",
+        "exec rea mcp"
+      ],
+      "env": {}
+    }
+  }
+}

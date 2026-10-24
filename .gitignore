@@ -1,0 +1,54 @@
+# ── Conteúdo protegido por copyright: NUNCA versionar ─────────────────────────
+*.nds
+*.srl
+*.dsi
+*.ids
+*.zip.rom
+roms/*
+!roms/README.md
+!roms/bios/
+roms/bios/*
+!roms/bios/README.md
+
+# Extrações, desmontagens e builds por jogo (derivados da ROM)
+games/*/extract/
+games/*/build/
+games/*/runs/
+games/*/cache/
+games/*/states/*.State
+games/*/states/*.state
+games/*/states/*.mln
+games/*/states/*.ml[0-9]
+games/*/states/*.dst
+games/*/states/*.png
+games/*/decomp/asm/
+games/*/decomp/build/
+games/*/decomp/extract/
+games/*/ghidra/
+games/*/decomp/*.ninja
+games/*/decomp/.ninja_*
+games/*/decomp/objdiff.json
+games/*/decomp/report*.json
+
+# ── Toolchain baixada pelo `factory setup` (reprodutível pelo toolchain.json) ──
+toolchain/
+.venv/
+__pycache__/
+*.pyc
+
+# ── Saídas temporárias ────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.part
+selftest-out/
+tools/selftest/build/
+
+# ── Configuração local do agente (por máquina) ────────────────────────────────
+.claude/settings.local.json
+
+# ── SO / editores ─────────────────────────────────────────────────────────────
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

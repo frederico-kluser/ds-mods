@@ -1,0 +1,148 @@
+{
+  "_doc": "Manifesto da toolchain Windows da fábrica. `factory setup` baixa cada item para toolchain/<dest> (gitignored), verifica sha256 (quando fixado aqui ou no toolchain.lock.json) e grava o marcador toolchain/.installed/<id>.json. Para atualizar uma ferramenta: troque version/url, apague o sha256 (ou rode `factory setup --only <id> --force --relock`).",
+  "schema": 1,
+  "tools": {
+    "dsd": {
+      "group": "core",
+      "version": "v0.12.1",
+      "url": "https://github.com/AetiasHax/ds-decomp/releases/download/v0.12.1/dsd-windows-x86_64.exe",
+      "type": "file",
+      "dest": "bin/dsd.exe",
+      "about": "AetiasHax/ds-decomp: extração/rebuild de ROM, init, delink, dis, lcf, objdiff, check, sig"
+    },
+    "objdiff-cli": {
+      "group": "core",
+      "version": "v3.8.3",
+      "url": "https://github.com/encounter/objdiff/releases/download/v3.8.3/objdiff-cli-windows-x86_64.exe",
+      "type": "file",
+      "dest": "bin/objdiff-cli.exe",
+      "about": "encounter/objdiff CLI: diff e relatório de progresso headless"
+    },
+    "objdiff-gui": {
+      "group": "extra",
+      "version": "v3.8.3",
+      "url": "https://github.com/encounter/objdiff/releases/download/v3.8.3/objdiff-windows-x86_64.exe",
+      "type": "file",
+      "dest": "bin/objdiff.exe",
+      "about": "objdiff GUI (para o humano)"
+    },
+    "sjiswrap": {
+      "group": "core",
+      "version": "v1.2.2",
+      "url": "https://github.com/encounter/sjiswrap/releases/download/v1.2.2/sjiswrap-windows-x86.exe",
+      "type": "file",
+      "dest": "bin/sjiswrap.exe",
+      "about": "wrapper que deixa o mwccarm ler fontes UTF-8 como Shift-JIS (usado pelo zeldaret/ph)"
+    },
+    "ninja": {
+      "group": "core",
+      "version": "v1.13.2",
+      "url": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip",
+      "type": "zip",
+      "dest": "bin",
+      "about": "ninja build"
+    },
+    "mwccarm": {
+      "group": "core",
+      "version": "decompme-compilers-2023-10-18",
+      "url": "https://github.com/decompme/compilers/releases/download/compilers/mwccarm.zip",
+      "type": "zip",
+      "strip": 1,
+      "dest": "mwccarm",
+      "about": "Metrowerks CodeWarrior for DS (mwccarm/mwldarm/mwasmarm), todas as versões do decomp.me"
+    },
+    "bizhawk": {
+      "group": "core",
+      "version": "2.11.1",
+      "url": "https://github.com/TASEmulators/BizHawk/releases/download/2.11.1/BizHawk-2.11.1-win-x64.zip",
+      "type": "zip",
+      "dest": "bizhawk",
+      "about": "EmuHawk + núcleo melonDS: automação (Lua, savestates, screenshots, RAM) do ciclo visual"
+    },
+    "melonds": {
+      "group": "core",
+      "version": "1.1",
+      "url": "https://github.com/melonDS-emu/melonDS/releases/download/1.1/melonDS-1.1-windows-x86_64.zip",
+      "type": "zip",
+      "dest": "melonds",
+      "about": "melonDS standalone: jogar e depurar via GDB stub"
+    },
+    "armips": {
+      "group": "core",
+      "version": "v0.11.0",
+      "url": "https://github.com/Kingcom/armips/releases/download/v0.11.0/armips-v0.11.0-windows-x86.7z",
+      "type": "7z",
+      "dest": "armips",
+      "about": "assembler ARM/THUMB para micro-patches"
+    },
+    "ncpatcher": {
+      "group": "core",
+      "version": "v1.1.2",
+      "url": "https://github.com/TheGameratorT/NCPatcher/releases/download/v1.1.2/ncpatcher_v1.1.2_Windows-64bit.zip",
+      "type": "zip",
+      "dest": "ncpatcher",
+      "about": "injeção de código C/C++ (GCC) em arm9/overlays"
+    },
+    "fireflower": {
+      "group": "core",
+      "version": "1.0",
+      "url": "https://github.com/MammaMiaTeam/Fireflower/releases/download/1.0/fireflower.zip",
+      "type": "zip",
+      "dest": "fireflower",
+      "about": "nds-extract / nds-build (layout que o NCPatcher espera)"
+    },
+    "neondst": {
+      "group": "extra",
+      "version": "v1.0.0",
+      "url": "https://github.com/pants64DS/neondst/releases/download/v1.0.0/neondst-windows-x86_64.exe",
+      "type": "file",
+      "dest": "bin/neondst.exe",
+      "about": "empacotador incremental clean/modified para ROM hacks"
+    },
+    "arm-gnu": {
+      "group": "core",
+      "version": "15.2.1-1.1",
+      "url": "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v15.2.1-1.1/xpack-arm-none-eabi-gcc-15.2.1-1.1-win32-x64.zip",
+      "type": "zip",
+      "strip": 1,
+      "dest": "arm-gnu",
+      "about": "arm-none-eabi-gcc/g++/as/objdump/gdb (xPack) para NCPatcher, selftest e depuração"
+    },
+    "desmume": {
+      "group": "extra",
+      "version": "0.9.13",
+      "url": "https://github.com/TASEmulators/desmume/releases/download/release_0_9_13/desmume-0.9.13-win64.zip",
+      "type": "zip",
+      "dest": "desmume",
+      "about": "emulador alternativo (Lua/AVI) se o BizHawk falhar num jogo"
+    },
+    "jdk21": {
+      "group": "ghidra",
+      "version": "21.0.12.1+1",
+      "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jdk_x64_windows_hotspot_21.0.12.1_1.zip",
+      "sha256": "f9d6e191ab098c0d416e7d588a24420a8621cd2f4720dab2459b8b7b2d2d8b4e",
+      "type": "zip",
+      "strip": 1,
+      "dest": "jdk21",
+      "about": "Temurin JDK 21 (Ghidra)"
+    },
+    "ghidra": {
+      "group": "ghidra",
+      "version": "11.2.1",
+      "url": "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_11.2.1_build/ghidra_11.2.1_PUBLIC_20241105.zip",
+      "type": "zip",
+      "strip": 1,
+      "dest": "ghidra",
+      "about": "Ghidra 11.2.1 — a versão para a qual o dsd-ghidra 0.7.0 é publicado (GUI + headless no Windows)"
+    },
+    "dsd-ghidra": {
+      "group": "ghidra",
+      "version": "v0.7.0",
+      "url": "https://github.com/AetiasHax/dsd-ghidra/releases/download/v0.7.0/ghidra_11.2.1_PUBLIC_20260814_dsd-ghidra.zip",
+      "type": "zip",
+      "dest": "ghidra/Ghidra/Extensions",
+      "requires": ["ghidra"],
+      "about": "loader dsd para Ghidra (overlays em overlay spaces, DS Protect, SyncDsd)"
+    }
+  }
+}
