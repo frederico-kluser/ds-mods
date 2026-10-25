@@ -46,7 +46,7 @@ Topologia (decidida e testada em 2026-10-24, ver `docs/decisoes.md`): **Windows 
 | `tests/` | testes unitários sem toolchain (rodam no CI Ubuntu): `python -m unittest discover -s tests -t .`; `tests/fuzz/`: alvos de fuzzing (atheris) |
 | `docs/img/` | mídia do README, gerada por `factory selftest-media` (ciclo real na ROM homebrew) |
 | `.github/` | CI (lint + testes + `build`), CodeQL, Scorecard, release-please, Dependabot, rulesets |
-| `tools/wsl/provision-rea.sh` | REA + Ghidra 12.1.4 + JDK 21 no WSL |
+| `tools/wsl/provision-rea.sh` | REA (`npm ci` com `tools/wsl/rea/package-lock.json`) + Ghidra 12.1.4 + JDK 21 no WSL |
 | `roms/` (`bios/`) | ROMs/BIOS do usuário — **nunca** versionar |
 | `games/<ID>/` | workspace por jogo (ver `games/README.md`) |
 | `docs/` | guia original, pesquisa verificada, decisões |

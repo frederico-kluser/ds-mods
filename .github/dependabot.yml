@@ -24,3 +24,14 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+
+  - package-ecosystem: "npm"            # REA no WSL (tools/wsl/rea/package-lock.json, instalado com npm ci)
+    directory: "/tools/wsl/rea"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    groups:
+      rea:
+        patterns: ["*"]

@@ -215,8 +215,10 @@ def cmd_wsl_setup(args) -> int:
     if not shutil.which("wsl"):
         fail("WSL não está instalado (wsl.exe ausente)")
     script = wslpath(paths.TOOLS / "wsl" / "provision-rea.sh")
+    lock_dir = wslpath(paths.TOOLS / "wsl" / "rea")      # package.json + package-lock.json (npm ci)
     info(f"provisionando REA no WSL ({WSL_DISTRO}) como root — pode levar alguns minutos…")
-    p = _wsl(f"tr -d '\\r' < '{script}' > /tmp/provision-rea.sh && bash /tmp/provision-rea.sh", root=True)
+    p = _wsl(f"tr -d '\\r' < '{script}' > /tmp/provision-rea.sh && REA_LOCK_DIR='{lock_dir}' bash /tmp/provision-rea.sh",
+             root=True)
     print(p.stdout[-4000:])
     if p.returncode != 0:
         print(p.stderr[-4000:])
