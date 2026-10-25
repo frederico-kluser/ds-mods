@@ -25,7 +25,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from . import paths
-from .util import fail, info, read_json, warn, write_json
+from .util import fail, info, read_json, write_json
 
 FREEZE_EPS = 0.002          # mean abs diff (0..1) below which two frames are "the same"
 CHANGE_THRESH = 24          # per-pixel max channel delta (0..255) that counts as "changed"
@@ -174,8 +174,8 @@ def screen_regions(img: np.ndarray) -> dict[str, tuple[int, int, int, int]]:
 def frame_stats(frames: list[Frame]) -> dict:
     lum = [float(_gray(f.img).mean() / 255.0) for f in frames]
     motion = [0.0] + [mean_abs_diff(frames[i - 1].img, frames[i].img) for i in range(1, len(frames))]
-    black = [f.index for f, l in zip(frames, lum) if l < 0.02]
-    white = [f.index for f, l in zip(frames, lum) if l > 0.98]
+    black = [f.index for f, y in zip(frames, lum) if y < 0.02]
+    white = [f.index for f, y in zip(frames, lum) if y > 0.98]
     # freeze segments: consecutive samples with ~no change
     freezes = []
     start = None
@@ -324,9 +324,10 @@ def read_ram_csv(run_dir: Path) -> dict[str, list[tuple[int, float]]]:
                 if k == "frame":
                     continue
                 try:
-                    out.setdefault(k, []).append((fr, float(v)))
+                    val = float(v)
                 except (TypeError, ValueError):
-                    pass
+                    continue
+                out.setdefault(k, []).append((fr, val))
     return out
 
 
