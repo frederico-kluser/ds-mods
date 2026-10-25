@@ -1,0 +1,145 @@
+# =============================================================================
+# CI — ds-mods (frederico-kluser/ds-mods)
+#
+# lint (ruff) + testes unitários (matriz de Python) + selftest do motor da memória CoALA + job
+# agregador `build`. O NOME do job `build` é o `context` exigido pelo ruleset "Governança Principal
+# Restrita" (.github/rulesets/regras-main.json) — não renomeie sem atualizar o ruleset.
+# O `build` também impõe Conventional Commits no servidor: título do PR (= mensagem do squash merge)
+# e commits que chegam à main.
+# O ponta a ponta (`factory selftest`: BizHawk, melonDS, mwccarm, Ghidra) precisa do toolchain do
+# Windows (`factory setup`) e roda localmente; aqui rodam os testes que não dependem dele.
+# Actions fixadas por SHA (bash scripts/oss-pin-actions.sh da skill opensource-project).
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+  workflow_dispatch:   # disparado pelo release-please no PR de release (GITHUB_TOKEN não dispara pull_request)
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Install ruff (pinned by hash)
+        run: python -m pip install --disable-pip-version-check --require-hashes -r requirements-dev.txt
+
+      - name: Ruff
+        run: ruff check tools tests
+
+      - name: Compile
+        run: python -m compileall -q tools tests
+
+  test:
+    name: Tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check --require-hashes -r requirements.txt
+
+      - name: Unit tests
+        run: python -m unittest discover -s tests -t . -v
+
+      - name: CoALA memory engine selftest
+        run: python .agents/ds-mods-coala-agent-skill/scripts/coala.py --selftest
+
+  # Job AGREGADOR (status check obrigatório). `if: always()` + verificação explícita:
+  # um job pulado por dependência falhada não pode contar como sucesso.
+  build:
+    name: build
+    needs: [lint, test]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Lint e testes aprovados
+        env:
+          RESULTS: ${{ toJSON(needs.*.result) }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          results = json.loads(os.environ["RESULTS"])
+          print("resultados:", results)
+          sys.exit(0 if results and all(r == "success" for r in results) else 1)
+          PY
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Conventional Commits
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          python3 - <<'PY'
+          import os, re, subprocess, sys
+          header = re.compile(r'^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([^)]*\))?!?: \S.*')
+          skip = re.compile(r'^(Merge |Revert "|Reapply ")')
+          def check(msg, origem):
+              h = re.sub(r'\s+\(#\d+\)$', '', msg.strip())   # sufixo "(#N)" do squash não conta
+              if skip.match(h):
+                  return 0
+              if not header.match(h) or len(h) > 72:
+                  print(f"ERRO ({origem}): fora de Conventional Commits ou > 72 caracteres: {msg!r}")
+                  return 1
+              print(f"OK   ({origem}): {msg}")
+              return 0
+          bad = 0
+          event = os.environ.get("EVENT", "")
+          if event == "pull_request":
+              bad |= check(os.environ.get("PR_TITLE", ""), "título do PR = mensagem do squash")
+          else:
+              before = os.environ.get("BEFORE", "")
+              if event == "push" and before and set(before) != {"0"}:
+                  rng = [f"{before}..HEAD"]
+              else:
+                  rng = ["-n", "20", "HEAD"]
+              out = subprocess.run(["git", "log", "--no-merges", "--format=%s", *rng],
+                                   capture_output=True, text=True, check=True).stdout
+              for subject in out.splitlines():
+                  bad |= check(subject, "commit")
+          sys.exit(bad)
+          PY

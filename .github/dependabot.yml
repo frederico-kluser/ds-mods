@@ -1,0 +1,26 @@
+# Atualizações automáticas (semanais) — mensagens em Conventional Commits para passar no job `build`.
+# O toolchain pinado em tools/toolchain.json (dsd, objdiff, BizHawk, melonDS, Ghidra, JDK…) é atualizado à mão,
+# com novo sha256, num PR próprio.
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    groups:
+      python:
+        patterns: ["*"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      actions:
+        patterns: ["*"]

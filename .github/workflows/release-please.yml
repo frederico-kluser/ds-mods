@@ -1,0 +1,60 @@
+# =============================================================================
+# Release Please — ds-mods (frederico-kluser/ds-mods)
+#
+# Mantém um PR de release com a próxima versão (calculada pelos Conventional Commits) e o
+# CHANGELOG.md; ao fazer o squash merge desse PR, cria a tag vX.Y.Z e a GitHub Release.
+# Atualiza também `__version__` em tools/factory/__init__.py (marcador x-release-please-version).
+#
+# PRs abertos com o GITHUB_TOKEN não disparam `pull_request` em outros workflows; por isso o
+# job dispara o CI (workflow_dispatch, a exceção documentada) na branch do PR de release, para
+# o status check obrigatório `build` existir. Requer "Allow GitHub Actions to create and approve
+# pull requests" ligado no repositório. Não há publicação em registry (nada a publicar).
+# Actions fixadas por SHA.
+# =============================================================================
+
+name: Release Please
+
+on:
+  push:
+    branches:
+      - "main"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-please-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release PR / GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write        # tags, releases e commits no PR de release
+      pull-requests: write   # abrir/atualizar o PR de release
+      actions: write         # disparar o CI no PR de release
+    steps:
+      - name: Release Please
+        id: rp
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: CI no PR de release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          # o PR de release é identificado pela label do release-please (o nome da branch varia)
+          branches="$(gh pr list --repo "$REPO" --state open --label 'autorelease: pending' --json headRefName --jq '.[].headRefName')"
+          if [ -z "$branches" ]; then
+            echo "sem PR de release aberto"
+            exit 0
+          fi
+          for b in $branches; do
+            gh workflow run ci.yml --repo "$REPO" --ref "$b"
+            echo "CI disparado em $b"
+          done
