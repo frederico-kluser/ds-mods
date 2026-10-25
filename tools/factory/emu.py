@@ -196,27 +196,51 @@ def load_scenario(g: Game, ref: str) -> tuple[str, dict]:
     return p.stem, data
 
 
+def _scenario_list(items, what: str) -> list:
+    if items is None:
+        return []
+    if not isinstance(items, list):
+        fail(f"cenário: \"{what}\" deve ser uma lista, não {type(items).__name__}")
+    return items
+
+
 def _normalize_inputs(items: list) -> list:
     out = []
-    for it in items or []:
-        e = {"frame": int(it["frame"]), "hold": int(it.get("hold", 1))}
-        btns = it.get("buttons") or []
-        bad = [b for b in btns if b not in BUTTONS]
+    for it in _scenario_list(items, "inputs"):
+        try:
+            e = {"frame": int(it["frame"]), "hold": int(it.get("hold", 1))}
+            btns = it.get("buttons") or []
+            touch = [int(v) for v in it["touch"]] if it.get("touch") else None
+            if not isinstance(btns, list) or (touch is not None and len(touch) != 2):
+                raise ValueError("buttons deve ser lista e touch deve ser [x, y]")
+        except (KeyError, TypeError, ValueError, AttributeError, OverflowError) as exc:
+            fail(f"cenário: input inválido {it!r} ({exc})")
+        bad = [b for b in btns if not isinstance(b, str) or b not in BUTTONS]
         if bad:
             fail(f"botões inválidos {bad} (válidos: {sorted(BUTTONS)})")
         e["buttons"] = btns
-        if it.get("touch"):
-            x, y = it["touch"]
-            e["touch"] = [int(x), int(y)]
+        if touch is not None:
+            e["touch"] = touch
         out.append(e)
     return out
 
 
+WATCH_TYPES = ("u8", "s8", "u16", "s16", "u32", "s32")      # readers of factory_runner.lua
+
+
 def _normalize_watches(items: list) -> list:
     out = []
-    for w in items or []:
-        out.append({"name": w["name"], "addr": parse_int(w["addr"]), "type": w.get("type", "u32"),
-                    **({"domain": w["domain"]} if w.get("domain") else {})})
+    for w in _scenario_list(items, "watches"):
+        try:
+            entry = {"name": w["name"], "addr": parse_int(w["addr"]), "type": w.get("type", "u32")}
+            domain = w.get("domain")
+        except (KeyError, TypeError, ValueError, AttributeError) as exc:
+            fail(f"cenário: watch inválido {w!r} ({exc})")
+        if not isinstance(entry["name"], str) or entry["addr"] < 0 or entry["type"] not in WATCH_TYPES:
+            fail(f"cenário: watch inválido {w!r} (name texto, addr ≥ 0, type em {', '.join(WATCH_TYPES)})")
+        if domain:
+            entry["domain"] = str(domain)
+        out.append(entry)
     return out
 
 
