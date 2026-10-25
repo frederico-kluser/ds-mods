@@ -43,7 +43,7 @@ Topologia (decidida e testada em 2026-10-24, ver `docs/decisoes.md`): **Windows 
 | `tools/lua/factory_runner.lua` | automação do BizHawk (inputs, capturas, RAM, savestates, hotpatch, gravação) |
 | `tools/ghidra_scripts/` | `FactoryDecompile.java`, `FactorySyncDsd.java` (SyncDsd headless) |
 | `tools/selftest/` | ROM homebrew própria (armips) usada pelo `factory selftest` |
-| `tests/` | testes unitários sem toolchain (rodam no CI Ubuntu): `python -m unittest discover -s tests -t .` |
+| `tests/` | testes unitários sem toolchain (rodam no CI Ubuntu): `python -m unittest discover -s tests -t .`; `tests/fuzz/`: alvos de fuzzing (atheris) |
 | `docs/img/` | mídia do README, gerada por `factory selftest-media` (ciclo real na ROM homebrew) |
 | `.github/` | CI (lint + testes + `build`), CodeQL, Scorecard, release-please, Dependabot, rulesets |
 | `tools/wsl/provision-rea.sh` | REA + Ghidra 12.1.4 + JDK 21 no WSL |

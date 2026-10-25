@@ -74,6 +74,8 @@ Fora do escopo (reporte ao projeto de origem):
 - **Rulesets** na `main`: PR obrigatório, squash-only, histórico linear, sem force-push e sem
   delete, status check `build` obrigatório; nomes de branch `<tipo>/<slug>`; tags `v*` imutáveis.
 - **CodeQL** (Python) e **OpenSSF Scorecard** com resultados publicados.
+- **Fuzzing** contínuo (atheris) dos parsers de entrada não confiável: cabeçalho e tabelas de ROM,
+  configs do dsd, condições do `ramsearch` e cenários/critérios em JSON (`tests/fuzz/`).
 - Actions fixadas por **SHA** e `permissions` mínimas em todos os workflows.
 
 ## Contato

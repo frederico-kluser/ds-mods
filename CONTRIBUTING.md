@@ -79,6 +79,24 @@ python -m unittest discover -s tests -t .       # testes unitários (qualquer SO
 - Aprendizado durável vai para a memória CoALA do projeto; antes de commitar, `factory memory dump`.
 - Workflows: actions fixadas por SHA, `permissions` mínimas e `timeout-minutes` em todo job.
 
+### Fuzzing
+
+Os parsers que recebem entrada de fora (cabeçalho e tabelas de ROM, configs do dsd, condições do
+`ramsearch`, cenários e critérios em JSON) têm alvos de fuzzing em `tests/fuzz/` (atheris/libFuzzer).
+O CI roda cada alvo nos PRs que mexem em `tools/factory/` e por 10 minutos toda semana. Localmente:
+
+```bash
+# Linux x86-64 ou WSL: libFuzzer guiado por cobertura (o 1.º diretório recebe as entradas novas)
+pip install --require-hashes -r requirements.txt -r requirements-fuzz.txt
+python tests/fuzz/fuzz_rom.py -max_total_time=60 work/fuzz/rom tests/fuzz/corpus/rom
+
+# Windows/macOS (sem atheris): corpus + mutações aleatórias; também reproduz um crash baixado do CI
+python tests/fuzz/fuzz_rom.py crash-0123abcd
+```
+
+Crash corrigido vira teste de regressão em `tests/test_robustez.py`, e a entrada vai para
+`tests/fuzz/corpus/<alvo>/`.
+
 ## Revisão, merge e releases
 
 - O PR só entra com o status check `build` verde (lint + testes + mensagens convencionais) e as
