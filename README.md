@@ -125,7 +125,7 @@ RAM: placar: 7.0→11.0
 | `tools/ghidra_scripts/` | layout de módulos/overlays, descompilação e sync com o dsd (headless) |
 | `tools/selftest/` | a ROM homebrew de teste (armips) |
 | `tools/toolchain.json` | toolchain pinado com sha256 (`toolchain.lock.json`: o que está instalado) |
-| `tests/` | testes unitários que rodam em qualquer SO (o CI usa Ubuntu) |
+| `tests/` | testes unitários que rodam em qualquer SO (o CI usa Ubuntu); `tests/fuzz/`: fuzzing (atheris) dos parsers de entrada não confiável |
 | `.agents/` | skills dos agentes (`nds-visual-loop`, `nds-rea-modder`) e a memória CoALA local |
 | `games/`, `roms/` | workspaces por jogo e ROMs do usuário — nada disso é versionado |
 | `docs/` | decisões de arquitetura, pesquisa verificada e o guia original |

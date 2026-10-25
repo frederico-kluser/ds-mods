@@ -1,0 +1,4 @@
+# Fuzzing (tests/fuzz/): o atheris só publica wheels para Linux x86-64 (Python 3.12–3.14), sem sdist.
+# Sem ele (Windows/macOS) os alvos rodam em modo de mutação aleatória. Instale junto com o principal:
+#   pip install --require-hashes -r requirements.txt -r requirements-fuzz.txt
+atheris==3.1.0
