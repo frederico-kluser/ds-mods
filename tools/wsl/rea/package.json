@@ -1,0 +1,8 @@
+{
+  "name": "ds-mods-rea",
+  "private": true,
+  "description": "REA (rea-agents) no WSL da fábrica ds-mods: instalado por provision-rea.sh com npm ci a partir do package-lock.json (versões e hashes fixos).",
+  "dependencies": {
+    "rea-agents": "6.7.0"
+  }
+}

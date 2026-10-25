@@ -125,9 +125,15 @@ não no `~/.claude.json` global como o guia sugeria.
   irmão `snes-mods`: rulesets (main só por PR + squash + check `build`; nomes `<tipo>/<slug>`; tags
   `v*` imutáveis), Conventional Commits, release-please, CodeQL, Scorecard, Dependabot e
   dependências Python fixadas com hash (`requirements*.in` → `pip-compile --generate-hashes`).
-- **CI**: Ubuntu, Python 3.12 e 3.13 — ruff, 58 testes unitários sem toolchain (`tests/`, incluindo
+- **CI**: Ubuntu, Python 3.12 e 3.13 — ruff, 68 testes unitários sem toolchain (`tests/`, incluindo
   uma imitação fiel do stub GDB do melonDS) e o selftest do motor CoALA. O `factory selftest` (BizHawk,
   melonDS, mwccarm, Ghidra) precisa do toolchain do Windows e roda localmente.
+- **Fuzzing**: atheris/libFuzzer nos parsers de entrada não confiável (`tests/fuzz/`: ROM, configs do
+  dsd, condições do ramsearch, cenários/critérios); o primeiro passe achou quatro falhas (#2). Roda
+  90 s por alvo nos PRs e 10 min por semana (`fuzz.yml`).
+- **REA com lockfile**: `provision-rea.sh` instala o `rea-agents` com `npm ci` a partir de
+  `tools/wsl/rea/package-lock.json` (179 pacotes com hash de integridade) em `/opt/rea-agents`, em vez
+  de `npm install -g` sem trava; o Dependabot mantém o lockfile.
 - **Mídia do README**: gerada por `factory selftest-media` — um `factory cycle` de verdade na ROM
   homebrew (nada de jogo comercial).
 - **Créditos**: `THIRD_PARTY_NOTICES.md` com o texto MIT do dsd-ghidra (base do `FactorySyncDsd.java`)

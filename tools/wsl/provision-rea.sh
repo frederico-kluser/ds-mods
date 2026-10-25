@@ -3,11 +3,15 @@
 #   wsl -d <distro> -u root -- bash /mnt/c/.../tools/wsl/provision-rea.sh
 # ). Idempotent. REA's Ghidra provider on native Windows only admits PE/6502 targets, so ARM code from
 # DS ROMs (ELF objects from `dsd delink`, raw module binaries) has to be analysed from Linux.
+# REA is installed with `npm ci` from tools/wsl/rea/package-lock.json (exact versions + integrity hashes)
+# into REA_DIR and linked into REA_BIN_DIR; REA_LOCK_DIR points at that folder (factory passes it).
 set -euo pipefail
 
 GHIDRA_VER="${GHIDRA_VER:-12.1.4}"
 GHIDRA_DATE="${GHIDRA_DATE:-20260921}"
-REA_VER="${REA_VER:-6.7.0}"
+REA_LOCK_DIR="${REA_LOCK_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/rea}"
+REA_DIR="${REA_DIR:-/opt/rea-agents}"
+REA_BIN_DIR="${REA_BIN_DIR:-/usr/local/bin}"
 export DEBIAN_FRONTEND=noninteractive
 
 echo "[rea] pacotes base (JDK 21, unzip, procps, curl)…"
@@ -30,8 +34,11 @@ if [ ! -x "${GHIDRA_DIR}/support/analyzeHeadless" ]; then
 fi
 ln -sfn "${GHIDRA_DIR}" /opt/ghidra
 
-echo "[rea] instalando rea-agents@${REA_VER}…"
-npm install -g "rea-agents@${REA_VER}" >/dev/null
+echo "[rea] instalando rea-agents com npm ci (${REA_LOCK_DIR}/package-lock.json → ${REA_DIR})…"
+mkdir -p "${REA_DIR}" "${REA_BIN_DIR}"
+cp "${REA_LOCK_DIR}/package.json" "${REA_LOCK_DIR}/package-lock.json" "${REA_DIR}/"
+(cd "${REA_DIR}" && npm ci --omit=dev --no-audit --no-fund >/dev/null)
+ln -sfn "${REA_DIR}/node_modules/.bin/rea" "${REA_BIN_DIR}/rea"
 
 cat > /etc/profile.d/ds-mods-rea.sh <<EOF
 export GHIDRA_INSTALL_DIR=/opt/ghidra
@@ -44,6 +51,6 @@ chmod 644 /etc/profile.d/ds-mods-rea.sh
 
 echo "[rea] versões:"
 node -v
-rea --version || true
+"${REA_BIN_DIR}/rea" --version || true
 "${GHIDRA_DIR}/support/analyzeHeadless" -help >/dev/null 2>&1 && echo "ghidra ${GHIDRA_VER} ok"
 echo "[rea] pronto"
