@@ -1,6 +1,7 @@
 //Headless dsd → Ghidra sync for the ds-mods factory (config.yaml path comes from the script arguments).
 //Derived from dsd-ghidra's SyncDsd.java — MIT License, Copyright (c) 2025 Aetias
-//(https://github.com/AetiasHax/dsd-ghidra). Only run() changed: no file chooser, no properties file.
+//(https://github.com/AetiasHax/dsd-ghidra); full license text in THIRD_PARTY_NOTICES.md.
+//Only run() changed: no file chooser, no properties file.
 //@author Aetias (original), ds-mods factory (headless adaptation)
 //@category ds-mods
 import dsdghidra.DsdGhidra;

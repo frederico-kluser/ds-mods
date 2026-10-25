@@ -9,6 +9,7 @@ factory text eol=lf
 *.png binary
 *.jpg binary
 *.mp4 binary
+*.gif binary
 *.nds binary
 *.bin binary
 *.State binary

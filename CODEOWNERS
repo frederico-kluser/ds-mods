@@ -1,0 +1,4 @@
+# CODEOWNERS — ds-mods
+# Responsável por todo o repositório (projeto com um mantenedor; acrescente pessoas/equipas
+# por caminho quando houver mais revisores — a última regra que casa vence).
+*       @frederico-kluser

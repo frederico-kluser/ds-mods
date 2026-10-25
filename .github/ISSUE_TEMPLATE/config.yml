@@ -1,0 +1,13 @@
+# Issues do ds-mods (frederico-kluser/ds-mods).
+# Issues em branco desativadas: use um modelo. Vulnerabilidades vão pelo canal privado.
+blank_issues_enabled: false
+contact_links:
+  - name: Vulnerabilidade de segurança
+    url: https://github.com/frederico-kluser/ds-mods/security/advisories/new
+    about: Reporte em privado (Private Vulnerability Reporting). Nunca como issue pública.
+  - name: Política de segurança (SECURITY.md)
+    url: https://github.com/frederico-kluser/ds-mods/security/policy
+    about: Versões suportadas, processo de divulgação e prazos.
+  - name: Dúvidas e ideias (Discussions)
+    url: https://github.com/frederico-kluser/ds-mods/discussions
+    about: Perguntas de uso e discussões antes de abrir uma sugestão.
