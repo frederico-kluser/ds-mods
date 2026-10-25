@@ -119,6 +119,20 @@ não no `~/.claude.json` global como o guia sugeria.
 - **Verificação**: 4 checagens no `factory selftest` (leituras repetidas na mesma sessão, breakpoint
   em `wait_vblank`, escrita + leitura, continue).
 
+## ADR-14 — Publicação aberta com a governança da opensource-project
+
+- **Decisão**: repositório público `frederico-kluser/ds-mods` (MIT) com a mesma governança do projeto
+  irmão `snes-mods`: rulesets (main só por PR + squash + check `build`; nomes `<tipo>/<slug>`; tags
+  `v*` imutáveis), Conventional Commits, release-please, CodeQL, Scorecard, Dependabot e
+  dependências Python fixadas com hash (`requirements*.in` → `pip-compile --generate-hashes`).
+- **CI**: Ubuntu, Python 3.12 e 3.13 — ruff, 58 testes unitários sem toolchain (`tests/`, incluindo
+  uma imitação fiel do stub GDB do melonDS) e o selftest do motor CoALA. O `factory selftest` (BizHawk,
+  melonDS, mwccarm, Ghidra) precisa do toolchain do Windows e roda localmente.
+- **Mídia do README**: gerada por `factory selftest-media` — um `factory cycle` de verdade na ROM
+  homebrew (nada de jogo comercial).
+- **Créditos**: `THIRD_PARTY_NOTICES.md` com o texto MIT do dsd-ghidra (base do `FactorySyncDsd.java`)
+  e as licenças de tudo o que o `factory setup` baixa sem redistribuir.
+
 ## Desvios em relação ao guia original
 
 | Guia | Aqui | Motivo |

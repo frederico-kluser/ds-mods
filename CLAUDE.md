@@ -39,10 +39,13 @@ Topologia (decidida e testada em 2026-10-24, ver `docs/decisoes.md`): **Windows 
 | `factory.ps1` / `factory.cmd` / `factory` | CLI da fábrica (`tools/factory/`, Python 3.12 no `.venv`) |
 | `bootstrap.ps1` | prepara uma máquina do zero (venv + toolchain + WSL/REA opcional) |
 | `tools/toolchain.json` + `toolchain.lock.json` | versões/URLs/sha256 de cada ferramenta (baixadas p/ `toolchain/`, fora do git) |
-| `tools/factory/*.py` | módulos: `game` `rom` `emu` `analyze` `cycle` `ramsearch` `mods` `disasm` `decomp` `mwcc` `ghidra` `debug` `selftest` |
+| `tools/factory/*.py` | módulos: `game` `rom` `emu` `analyze` `cycle` `ramsearch` `mods` `disasm` `decomp` `mwcc` `ghidra` `debug` (+ `gdbproxy`/`gdbclient`) `selftest` `showcase` `memory` |
 | `tools/lua/factory_runner.lua` | automação do BizHawk (inputs, capturas, RAM, savestates, hotpatch, gravação) |
 | `tools/ghidra_scripts/` | `FactoryDecompile.java`, `FactorySyncDsd.java` (SyncDsd headless) |
 | `tools/selftest/` | ROM homebrew própria (armips) usada pelo `factory selftest` |
+| `tests/` | testes unitários sem toolchain (rodam no CI Ubuntu): `python -m unittest discover -s tests -t .` |
+| `docs/img/` | mídia do README, gerada por `factory selftest-media` (ciclo real na ROM homebrew) |
+| `.github/` | CI (lint + testes + `build`), CodeQL, Scorecard, release-please, Dependabot, rulesets |
 | `tools/wsl/provision-rea.sh` | REA + Ghidra 12.1.4 + JDK 21 no WSL |
 | `roms/` (`bios/`) | ROMs/BIOS do usuário — **nunca** versionar |
 | `games/<ID>/` | workspace por jogo (ver `games/README.md`) |
@@ -65,7 +68,8 @@ Topologia (decidida e testada em 2026-10-24, ver `docs/decisoes.md`): **Windows 
 
 | Área | Comandos |
 |---|---|
-| Ambiente | `doctor` · `setup [--only id]` · `selftest [--ghidra]` · `memory dump\|restore\|status` |
+| Ambiente | `doctor` · `setup [--only id]` · `selftest [--ghidra]` · `selftest-media` · `memory dump\|restore\|status` |
+| Qualidade | `ruff check tools tests` · `python -m unittest discover -s tests -t .` (o `.venv` tem as ferramentas de `requirements-dev.txt`) |
 | Jogo | `new <rom>` · `info [--overlays]` · `files [filtro]` · `extract [--force]` |
 | RE estática | `dis <sym/addr>` · `xrefs <sym/addr>` · `find --string/--hex/--u32` · `sym <q>` · `hookcheck <addr>` · `ghidra decompile/import/gui` |
 | RE dinâmica | `debug start/stop` (melonDS + GDB) · `gdb status\|regs\|read <a> [n]\|write <a> <hex>\|break <a> [--thumb]\|step [n]\|halt\|continue` · `ramsearch <run> --where …` |
@@ -83,9 +87,9 @@ Topologia (decidida e testada em 2026-10-24, ver `docs/decisoes.md`): **Windows 
 - Não abra o `.nds` inteiro no REA; use ELFs do `dsd delink` ou módulos crus (ver skill).
 - Mudou ferramenta/versão? Edite `tools/toolchain.json` e rode `factory setup --only <id> --relock`.
 - Commits: pequenos, em Commits Convencionais (`feat(mod): …`, `fix(emu): …` — o hook global do
-  usuário recusa outro formato); nunca com ROM/derivados (confira `git status` antes). Antes de
-  commitar rode `factory memory dump`: o git versiona as notas da memória no dump JSONL
-  (`memory/coala.canonical.jsonl`); a base SQLite é local.
+  usuário recusa outro formato), sempre por branch + PR (seção 7); nunca com ROM/derivados (confira
+  `git status` antes). Antes de commitar rode `factory memory dump`: o git versiona as notas da
+  memória no dump JSONL (`memory/coala.canonical.jsonl`); a base SQLite é local.
 - Antes de encerrar uma tarefa: registre o aprendizado durável na memória CoALA (seção abaixo) e em
   `games/<ID>/notes/`.
 
@@ -103,6 +107,38 @@ Topologia (decidida e testada em 2026-10-24, ver `docs/decisoes.md`): **Windows 
 - REA: caminhos `/mnt/c/...` (`factory ghidra wslpath`); 1ª análise de um binário pode levar minutos.
 - O Ghidra do Windows é 11.2.1 porque o dsd-ghidra 0.7.0 só é publicado para essa versão.
 - Ferramentas GUI (EmuHawk, melonDS) abrem janelas na área de trabalho durante os runs — é normal.
+
+## 7. Governança open-source (contrato da skill `opensource-project`)
+
+Projeto público em `frederico-kluser/ds-mods`, governado pela skill **opensource-project**. Valem
+sempre, sem precisar invocar a skill (comandos em `~/.claude/skills/opensource-project/scripts/`):
+
+1. **Reentry**: antes de qualquer tarefa de governança e antes de fechar o trabalho,
+   `bash ~/.claude/skills/opensource-project/scripts/oss-enforce.sh` (verifica e aplica o que falta:
+   fundação, hooks locais, rulesets, push protection) e `oss-doctor.sh` sem `[FALTA]`.
+2. **`main` é cofre**: nunca push direto. Branch `<tipo>/<slug>` (`feat fix docs style refactor perf
+   test build ci revert hotfix release`) → PR com título Convencional → status check `build` verde →
+   **squash merge** → apagar a branch. O GitHub recusa o resto (rulesets em `.github/rulesets/`; o
+   projeto tem um mantenedor, então o PR exige 0 aprovações — suba quando houver revisores).
+3. **Commits Convencionais** (`tipo(escopo)!: descrição`, ≤ 72 caracteres) — validados pelo hook
+   `commit-msg` local e, no servidor, pelo job `build` do CI (título do PR = mensagem do squash).
+4. **Versão e changelog são gerados**: o release-please mantém o PR de release (SemVer pelos commits,
+   `CHANGELOG.md`, `__version__` em `tools/factory/__init__.py`). Nunca editar à mão; tags `v*` imutáveis.
+5. **Workflows**: actions fixadas por SHA (`oss-pin-actions.sh`), `permissions` mínimas,
+   `timeout-minutes` em todo job; o `context` exigido pelo ruleset é o nome do job (`build`).
+6. **Zero segredos e zero material comercial** no código, no histórico e nos anexos
+   (`oss-gate.sh push --scan-only` antes de subir; `.gitignore` cobre ROMs/BIOS/states/extrações).
+7. **Nunca contornar um gate** (`--no-verify`, force-push, reescrever histórico): corrigir a causa.
+   Erros no formato `Erro: <o quê> — Solução: <o que fazer>`.
+
+| pedido | procedimento |
+|---|---|
+| "commita" | `oss-gate.sh commit-msg "<msg>"` → `factory memory dump` → `git commit` |
+| "sobe/push" | branch `<tipo>/<slug>` → `oss-gate.sh push` → `git push -u origin <branch>` → `gh pr create --base main` |
+| "faz merge" | `gh pr checks --watch` → `gh pr merge --squash --delete-branch` |
+| "faz release" | squash merge do PR do release-please (cria tag `vX.Y.Z` + GitHub Release) |
+| "muda CI" | editar `.github/workflows/` → `oss-pin-actions.sh` → manter o job `build` |
+| "muda dependência" | editar `requirements*.in` → `pip-compile --generate-hashes …` (comando no topo do `.in`) |
 
 <!-- BEGIN:coala-memory (gerido por coala-agent-skill — não editar dentro do bloco) -->
 ## Memória e catálogo do projeto (CoALA)

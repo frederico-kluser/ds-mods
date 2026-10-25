@@ -9,6 +9,12 @@ de mods/recompilação de Nintendo DS). Skills do projeto em `.agents/skills/`:
 
 CLI: `.\factory.ps1 <comando>` (PowerShell), `factory.cmd` (cmd) ou `./factory` (Git Bash).
 
+Projeto público (`frederico-kluser/ds-mods`) governado pela skill opensource-project — contrato
+completo na seção 7 do `CLAUDE.md`. O essencial: nunca push direto na `main`; branch `<tipo>/<slug>`
+→ PR com título em Conventional Commits (≤ 72 caracteres) → status check `build` verde → squash
+merge. Versão e `CHANGELOG.md` são gerados pelo release-please. Nunca versione ROMs, BIOS,
+savestates nem nada derivado de jogos comerciais.
+
 <!-- BEGIN:coala-memory (gerido por coala-agent-skill — não editar dentro do bloco) -->
 ## Memória e catálogo do projeto (CoALA)
 
