@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
-from pathlib import Path
 
 from . import paths
 from .util import info, read_json, table

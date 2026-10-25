@@ -13,7 +13,6 @@ from pathlib import Path
 
 from capstone import CS_ARCH_ARM, CS_MODE_ARM, CS_MODE_THUMB, Cs  # type: ignore
 
-from . import paths
 from .dsdproj import Project, find_project
 from .game import Game, load_game
 from .util import fail, info, parse_int, table, warn

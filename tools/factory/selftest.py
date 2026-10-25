@@ -18,7 +18,7 @@ import traceback
 from pathlib import Path
 
 from . import ndsbuild, paths, rom
-from .util import info, read_json, run, table, warn, write_json
+from .util import info, read_json, run, table, write_json
 
 SRC = paths.TOOLS / "selftest"
 OUT = paths.RUNTIME / "selftest"

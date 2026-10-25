@@ -11,7 +11,7 @@ import time
 import urllib.request
 import zipfile
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any, Iterable, NoReturn, Sequence
 
 from . import paths
 
@@ -32,7 +32,7 @@ def warn(msg: str) -> None:
     print(f"[factory] AVISO: {msg}", file=sys.stderr, flush=True)
 
 
-def fail(msg: str, code: int = 1) -> "NoReturn":  # type: ignore[name-defined]
+def fail(msg: str, code: int = 1) -> NoReturn:
     print(f"[factory] ERRO: {msg}", file=sys.stderr, flush=True)
     raise SystemExit(code)
 

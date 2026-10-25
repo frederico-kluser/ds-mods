@@ -35,7 +35,7 @@ import yaml  # type: ignore
 
 from . import paths
 from .game import Game, load_game
-from .util import fail, info, parse_int, read_json, run, sha256_file, table, warn, write_json
+from .util import fail, info, parse_int, read_json, run, sha256_file, table, write_json
 
 
 # ── work tree (a dsd extract directory) ──────────────────────────────────────

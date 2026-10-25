@@ -16,13 +16,12 @@ import json
 import os
 import shutil
 import subprocess
-import tempfile
 import time
 from pathlib import Path
 
 from . import paths
 from .game import Game, load_game
-from .util import fail, info, read_json, run, warn, write_json
+from .util import fail, info, read_json, write_json
 
 SCRIPTS = paths.TOOLS / "ghidra_scripts"
 WSL_DISTRO = os.environ.get("DSMODS_WSL_DISTRO", "Ubuntu")
@@ -128,8 +127,8 @@ def decompile(g: Game, targets: list[str], *, out: Path | None = None) -> str:
         ghidra_import(g)
     program = (read_json(pdir / "import.json") or {}).get("program", g.rom.name)
     out = out or (pdir / "decompiled.c")
-    p = _headless(pdir, pname, ["-process", program, "-noanalysis", "-readOnly", "-scriptPath", str(SCRIPTS),
-                                "-postScript", "FactoryDecompile.java", str(out), *targets])
+    _headless(pdir, pname, ["-process", program, "-noanalysis", "-readOnly", "-scriptPath", str(SCRIPTS),
+                            "-postScript", "FactoryDecompile.java", str(out), *targets])
     if not out.exists():
         fail("decompilação não produziu saída — veja " + paths.rel(pdir / "last_headless.log"))
     return out.read_text(encoding="utf-8", errors="replace")

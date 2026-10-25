@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import shutil
 import time
-from pathlib import Path
 
 from . import paths
 from .util import download, extract_7z, extract_zip, fail, info, read_json, warn, write_json

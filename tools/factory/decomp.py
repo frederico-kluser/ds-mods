@@ -14,9 +14,6 @@ Full rebuild (ph-style ninja graph): `factory decomp configure && factory decomp
 from __future__ import annotations
 
 import json
-import os
-import re
-import struct
 import subprocess
 import time
 from pathlib import Path
