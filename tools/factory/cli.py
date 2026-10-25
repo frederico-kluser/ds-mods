@@ -24,6 +24,7 @@ MODULES = [
     "debug",
     "ghidra",
     "selftest",
+    "showcase",
     "memory",
 ]
 
