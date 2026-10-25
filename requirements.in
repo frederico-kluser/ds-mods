@@ -1,0 +1,12 @@
+# Dependências diretas (Python 3.11–3.13; testado com 3.12). O requirements.txt com hashes é gerado daqui:
+#   pip-compile --generate-hashes --no-emit-index-url --strip-extras --output-file=requirements.txt requirements.in
+numpy==2.5.4
+pillow==13.0.0
+opencv-python-headless==5.0.0.93
+PyYAML==6.0.3
+ndspy==4.2.0
+capstone==5.0.9
+pyelftools==0.33
+imageio-ffmpeg==0.6.0
+py7zr==1.1.4
+psutil==7.2.2

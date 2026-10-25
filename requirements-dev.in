@@ -1,0 +1,3 @@
+# Ferramentas de desenvolvimento (CI: lint). Gere com:
+#   pip-compile --generate-hashes --no-emit-index-url --strip-extras --output-file=requirements-dev.txt requirements-dev.in
+ruff==0.17.2
