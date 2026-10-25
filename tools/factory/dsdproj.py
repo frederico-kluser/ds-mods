@@ -52,11 +52,24 @@ class Module:
     relocs: list[Reloc] = field(default_factory=list)
 
 
+def _size(text: str) -> int | None:
+    """dsd writes sizes as 0x…; anything else (hand edits, junk) is treated as unknown."""
+    try:
+        value = int(text, 0)
+    except ValueError:
+        return None
+    return value if value >= 0 else None
+
+
 def parse_symbols(path: Path, module: str) -> list[Symbol]:
-    out = []
     if not path.exists():
-        return out
-    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        return []
+    return parse_symbols_text(path.read_text(encoding="utf-8", errors="replace"), module)
+
+
+def parse_symbols_text(text: str, module: str) -> list[Symbol]:
+    out = []
+    for line in text.splitlines():
         line = line.split("//")[0].strip()
         if not line:
             continue
@@ -68,7 +81,7 @@ def parse_symbols(path: Path, module: str) -> list[Symbol]:
         mode = None
         for p in params:
             if p.startswith("size="):
-                size = int(p[5:], 0)
+                size = _size(p[5:])
             elif p in ("arm", "thumb"):
                 mode = p
         out.append(Symbol(name=m.group("name"), kind=m.group("kind"), addr=int(m.group("addr"), 16), size=size,
@@ -78,13 +91,18 @@ def parse_symbols(path: Path, module: str) -> list[Symbol]:
 
 
 def parse_relocs(path: Path, module: str) -> list[Reloc]:
-    out = []
     if not path.exists():
-        return out
-    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        return []
+    return parse_relocs_text(path.read_text(encoding="utf-8", errors="replace"), module)
+
+
+def parse_relocs_text(text: str, module: str) -> list[Reloc]:
+    out = []
+    for line in text.splitlines():
         m = REL_RE.search(line)
         if m:
-            add = int(m.group(4), 0) if m.group(4) else 0
+            add = m.group(4) or "0"
+            add = int(add, 16) if "0x" in add.lower() else int(add, 10)   # dsd may write 007, -8, 0x4
             out.append(Reloc(src=int(m.group(1), 16), kind=m.group(2), dst=int(m.group(3), 16), addend=add,
                              target_module=m.group(5), module=module))
     return out

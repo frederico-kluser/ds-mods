@@ -40,6 +40,24 @@ def load_dumps(run_dir: Path, domain: str = "Main_RAM") -> dict[str, Path]:
     return out
 
 
+def where_mask(wheres: list[str], arrays: dict[str, np.ndarray], n: int) -> np.ndarray:
+    """AND of the conditions over the dump arrays; each name must be a dump tag."""
+    mask = np.ones(n, dtype=bool)
+    for w in wheres:
+        if not SAFE.match(w) or "**" in w or len(w) > 400:
+            fail(f"expressão não permitida: {w!r} (até 400 caracteres; sem **)")
+        names = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", w))
+        unknown = names - set(arrays)
+        if unknown:
+            fail(f"tags desconhecidas {sorted(unknown)} (disponíveis: {', '.join(sorted(arrays))})")
+        try:
+            res = eval(w, {"__builtins__": {}}, arrays)  # noqa: S307 — restricted charset + names
+            mask &= np.asarray(res, dtype=bool)
+        except Exception as exc:  # syntax, overflow, shape…: the condition is wrong, not the program
+            fail(f"condição inválida {w!r}: {type(exc).__name__}: {exc}")
+    return mask
+
+
 def search(run_dir: Path, wheres: list[str], *, dtype: str = "u16", aligned: bool = True,
            start: Path | None = None, limit: int = 50) -> tuple[np.ndarray, dict[str, np.ndarray]]:
     dumps = load_dumps(run_dir)
@@ -67,15 +85,7 @@ def search(run_dir: Path, wheres: list[str], *, dtype: str = "u16", aligned: boo
         idx = [i for i in idx if 0 <= i < n]
         keep[idx] = True
         mask &= keep
-    for w in wheres:
-        if not SAFE.match(w):
-            fail(f"expressão não permitida: {w!r}")
-        names = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", w))
-        unknown = names - set(arrays)
-        if unknown:
-            fail(f"tags desconhecidas {sorted(unknown)} (disponíveis: {', '.join(sorted(arrays))})")
-        res = eval(w, {"__builtins__": {}}, arrays)  # noqa: S307 — restricted charset + names
-        mask &= np.asarray(res, dtype=bool)
+    mask &= where_mask(wheres, arrays, n)
     idx = np.nonzero(mask)[0]
     return idx, arrays
 

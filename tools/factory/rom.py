@@ -153,6 +153,8 @@ def parse_overlay_table(table: bytes, fat: bytes) -> list[Overlay]:
         start = end = 0
         if fid * 8 + 8 <= len(fat):
             start, end = struct.unpack_from("<2I", fat, fid * 8)
+            if end < start:                      # broken FAT entry
+                start = end = 0
         out.append(Overlay(id=ovid, ram_address=ram, ram_size=size, bss_size=bss, sinit_start=s0,
                            sinit_end=s1, file_id=fid, compressed_size=comp & 0xFFFFFF,
                            compressed=bool(comp & 0x01000000), signed=bool(comp & 0x02000000),
@@ -184,7 +186,11 @@ SDK_RE = re.compile(rb"\[SDK\+[A-Z0-9_]+:[ -~]{1,60}\]")
 
 def inspect(path: str | Path, *, scan_strings: bool = True) -> RomInfo:
     path = Path(path)
-    data = path.read_bytes()
+    return inspect_bytes(path.read_bytes(), path=str(path), scan_strings=scan_strings)
+
+
+def inspect_bytes(data: bytes, *, path: str = "<memória>", scan_strings: bool = True) -> RomInfo:
+    """Parse a ROM image already in memory; raises ValueError when it cannot be a DS ROM."""
     if len(data) < 0x200:
         raise ValueError(f"{path}: pequeno demais para ser uma ROM de DS")
     h = data[:0x200]
@@ -227,7 +233,7 @@ def inspect(path: str | Path, *, scan_strings: bool = True) -> RomInfo:
                 break
     known = KNOWN_DECOMPS.get(gamecode[:3]) if gamecode else None
     return RomInfo(
-        path=str(path), size=len(data), title=title, gamecode=gamecode, makercode=maker, unitcode=unit,
+        path=path, size=len(data), title=title, gamecode=gamecode, makercode=maker, unitcode=unit,
         region=REGIONS.get(gamecode[3:4], "?") if len(gamecode) == 4 else "?", revision=revision,
         device_capacity_mib=cap, arm9_rom_offset=arm9_off, arm9_entry=arm9_entry, arm9_ram=arm9_ram,
         arm9_size=arm9_size, arm7_rom_offset=arm7_off, arm7_entry=arm7_entry, arm7_ram=arm7_ram,

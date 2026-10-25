@@ -351,13 +351,42 @@ def _ram_value(ram: dict, watch: str, at) -> float | None:
     return best[1]
 
 
+AT_WORDS = (None, "end", "start", "max", "min")
+
+
+def _expect_number(value, what: str) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        fail(f"expect: {what} deve ser número, não {value!r}")
+    if math.isnan(number):
+        fail(f"expect: {what} não pode ser NaN")
+    return number
+
+
+def _expect_list(expect: dict, key: str) -> list[dict]:
+    items = expect.get(key) or []
+    if not isinstance(items, list) or not all(isinstance(x, dict) for x in items):
+        fail(f'expect: "{key}" deve ser uma lista de objetos, não {items!r}')
+    return items
+
+
+def _expect_int(value, what: str) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError, OverflowError):
+        fail(f"expect: {what} deve ser inteiro, não {value!r}")
+
+
 def evaluate_expect(expect: dict | None, *, stats: dict, ram: dict, comparison: dict | None,
                     frames: list[Frame], ref_frames: list[Frame] | None) -> dict | None:
     if not expect:
         return None
+    if not isinstance(expect, dict):
+        fail(f"expect deve ser um objeto JSON, não {type(expect).__name__}")
     results = []
     if expect.get("no_freeze"):
-        limit = float(expect.get("freeze_seconds", 2.0))
+        limit = _expect_number(expect.get("freeze_seconds", 2.0), "freeze_seconds")
         long_fr = [f for f in stats["freezes"] if f["seconds"] >= limit]
         results.append({"check": "no_freeze", "passed": not long_fr,
                         "detail": f"{len(long_fr)} congelamento(s) ≥ {limit:g}s"
@@ -366,23 +395,42 @@ def evaluate_expect(expect: dict | None, *, stats: dict, ram: dict, comparison: 
         bl = stats["black_frames"]
         results.append({"check": "no_black", "passed": len(bl) <= 1,
                         "detail": f"{len(bl)} frame(s) pretos" + (f": {bl[:6]}" if bl else "")})
-    for r in expect.get("ram", []):
-        v = _ram_value(ram, r["watch"], r.get("at", "end"))
-        ok = v is not None and OPS[r.get("op", "==")](v, float(r["value"]))
-        results.append({"check": f"ram {r['watch']} {r.get('op', '==')} {r['value']} @ {r.get('at', 'end')}",
-                        "passed": bool(ok), "detail": f"valor={v}"})
-    for vexp in expect.get("visual", []):
-        fr = int(vexp.get("frame", frames[-1].index if frames else 0))
+    for r in _expect_list(expect, "ram"):
+        watch, op, at = r.get("watch"), r.get("op", "=="), r.get("at", "end")
+        if not isinstance(watch, str) or not isinstance(op, str) or op not in OPS:
+            fail(f'expect.ram: precisa de "watch" (texto) e "op" ({" ".join(OPS)}): {r!r}')
+        if at not in AT_WORDS:
+            at = _expect_int(at, "ram.at")
+        value = _expect_number(r.get("value"), "ram.value")
+        v = _ram_value(ram, watch, at)
+        ok = v is not None and OPS[op](v, value)
+        results.append({"check": f"ram {watch} {op} {r.get('value')} @ {at}", "passed": bool(ok), "detail": f"valor={v}"})
+    for vexp in _expect_list(expect, "visual"):
+        fr = _expect_int(vexp.get("frame", frames[-1].index if frames else 0), "visual.frame")
+        region = vexp.get("region")
+        if region is not None:
+            if not isinstance(region, list) or len(region) != 4:
+                fail(f"expect.visual: region deve ser [x0, y0, x1, y1], não {region!r}")
+            region = [_expect_int(v, "visual.region") for v in region]
+        lo, hi = vexp.get("min_changed_pct"), vexp.get("max_changed_pct")
+        lo = None if lo is None else _expect_number(lo, "visual.min_changed_pct")
+        hi = None if hi is None else _expect_number(hi, "visual.max_changed_pct")
         cur = min(frames, key=lambda f: abs(f.index - fr)) if frames else None
         ref = (min(ref_frames, key=lambda f: abs(f.index - fr)) if ref_frames else None) if vexp.get("vs", "baseline") \
             else None
         if cur is None or ref is None:
             results.append({"check": f"visual @ {fr}", "passed": None, "detail": "sem referência para comparar"})
             continue
-        x0, y0, x1, y1 = vexp.get("region", [0, 0, cur.img.shape[1], cur.img.shape[0]])
+        h, w = cur.img.shape[:2]
+        x0, y0, x1, y1 = region or [0, 0, w, h]
+        x0, x1 = max(0, min(x0, w)), max(0, min(x1, w))
+        y0, y1 = max(0, min(y0, h)), max(0, min(y1, h))
+        if x1 <= x0 or y1 <= y0:
+            results.append({"check": f"visual região {region} @ {fr}", "passed": None,
+                            "detail": f"região vazia ou fora da imagem {w}x{h}"})
+            continue
         m = changed_mask(ref.img[y0:y1, x0:x1], cur.img[y0:y1, x0:x1])
         pct = 100.0 * float(m.mean())
-        lo, hi = vexp.get("min_changed_pct"), vexp.get("max_changed_pct")
         ok = (lo is None or pct >= lo) and (hi is None or pct <= hi)
         results.append({"check": f"visual região {[x0, y0, x1, y1]} @ {fr}", "passed": ok,
                         "detail": f"{pct:.1f}% mudou (min {lo}, max {hi})"})
